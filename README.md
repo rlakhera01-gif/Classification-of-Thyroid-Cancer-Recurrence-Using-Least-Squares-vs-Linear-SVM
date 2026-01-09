@@ -1,92 +1,98 @@
-# Classification of Thyroid Cancer Recurrence (Least Squares vs Linear SVM)
+# Classification of Thyroid Cancer Recurrence  
+### Least Squares vs Linear SVM
 
-This repository compares **Least Squares (Linear Regression used as a classifier)** vs **Linear SVM (LinearSVC)** for predicting **thyroid cancer recurrence** using the provided dataset (`Thyroid_Diff.csv`).  
-The goal is to evaluate which approach performs better under potential **class imbalance**, using **Balanced Accuracy** as the primary metric.
+Thyroid cancer recurrence prediction is an important clinical problem, as early identification of high-risk patients can support timely follow-up and improved treatment planning.
 
-## What’s inside
+This project builds a machine learning pipeline to predict **thyroid cancer recurrence** and compares the performance of **Least Squares (Linear Regression used as a classifier)** and **Linear Support Vector Machine (Linear SVM)** models under class imbalance.
 
-- `notebooks/Thyroid_Recurrence_LS_vs_SVM.ipynb` — end-to-end analysis (data prep → modeling → evaluation)
-- `data/Thyroid_Diff.csv` — dataset used in the notebook
-- `reports/Thyroid_Recurrence_LS_vs_SVM.pptx` — presentation (project summary & results)
+---
 
-> If your repo currently has files in the root, use the structure below. The notebook references `Thyroid_Diff.csv`, so either keep it in the same folder as the notebook or update the path accordingly.
+## Problem Statement
 
-## Recommended repo structure
+The objective of this project is to predict whether a patient will experience **thyroid cancer recurrence** based on clinical and pathological features.
 
-```
-Classification-of-Thyroid-Cancer-Recurrence/
-├─ README.md
-├─ requirements.txt
-├─ .gitignore
-├─ data/
-│  └─ Thyroid_Diff.csv
-├─ notebooks/
-│  └─ Thyroid_Recurrence_LS_vs_SVM.ipynb
-├─ reports/
-│  └─ Thyroid_Recurrence_LS_vs_SVM.pptx
-└─ images/
-   ├─ cm_ls.png
-   └─ cm_svm.png
-```
+This is framed as a **binary classification problem**, where:
+- `1` → Cancer recurrence  
+- `0` → No recurrence
 
-## Methods
+---
+
+## Dataset
+
+- Source: Differentiated Thyroid Cancer Recurrence dataset  
+- Observations: 383 patient records
+- Target variable: `Recurrence`
+- Feature types:
+  - Demographic attributes
+  - Tumor and pathology characteristics
+  - Treatment-related variables
+
+---
+
+## Methodology
+
+Two linear models are evaluated and compared:
 
 ### 1) Least Squares (Regression → Classification)
-- A **Linear Regression** model is fit on the training data.
-- Predictions are converted to class labels using a threshold (commonly `0.5`).
+- A Linear Regression model is trained on the dataset.
+- Continuous predictions are converted into class labels using a fixed threshold.
+- Serves as a simple and interpretable linear baseline.
 
-### 2) Linear SVM
-- A **LinearSVC** model is trained with preprocessing (imputation, encoding, scaling).
-- Hyperparameter tuning is performed using cross-validation (GridSearchCV).
+### 2) Linear Support Vector Machine (Linear SVM)
+- A LinearSVC classifier is trained using a preprocessing and modeling pipeline.
+- Hyperparameter `C` is tuned using **inner 5-fold cross-validation**.
+- Class imbalance is handled using **balanced class weights**.
 
-## Preprocessing (as used in the notebook)
+---
 
-- **Numeric features**: imputation + scaling  
-- **Categorical features**: imputation + one-hot encoding  
-- Implemented using `ColumnTransformer` + `Pipeline` to reduce leakage risk.
+## Data Preprocessing
 
-## Evaluation
+- Numerical features are scaled prior to modeling  
+- Categorical features are encoded using one-hot encoding  
+- Preprocessing and modeling are combined using **scikit-learn Pipelines** to ensure consistency during cross-validation
 
-Primary metric: **Balanced Accuracy** (better for imbalanced classes).  
-The notebook uses cross-validation utilities from scikit-learn.
+---
 
-> Note on CV wording:
-> - If you claim “nested CV”, use an **outer CV loop** with an **inner GridSearchCV** per fold.
-> - If you tune once on a train split and then report CV with a fixed hyperparameter, describe it as **tune-on-train + CV estimate**.
+## Evaluation Strategy
 
-## How to run
+- Primary evaluation metric: **Balanced Accuracy**
+- Metric chosen to account for class imbalance in recurrence outcomes
+- Final performance is reported using **5-fold cross-validation** on the finalized models
 
-### 1) Create environment & install dependencies
-```bash
-python -m venv .venv
-# macOS/Linux:
-source .venv/bin/activate
-# Windows:
-# .venv\Scripts\activate
-
-pip install -r requirements.txt
-```
-
-### 2) Launch Jupyter and run the notebook
-```bash
-jupyter notebook
-```
-Open: `notebooks/Thyroid_Recurrence_LS_vs_SVM.ipynb`
+---
 
 ## Results
 
-Add a small summary table here once finalized:
+| Model | Balanced Accuracy (5-Fold CV) |
+|------|-------------------------------|
+| Least Squares | **0.925 ± 0.034** |
+| Linear SVM | **0.945 ± 0.024** |
 
-| Model | Metric | Mean (CV) | Std (CV) |
-|------|--------|-----------|----------|
-| Least Squares | Balanced Accuracy | _TBD_ | _TBD_ |
-| Linear SVM | Balanced Accuracy | _TBD_ | _TBD_ |
+**Key observations:**
+- Linear SVM achieves higher balanced accuracy and lower variance across folds.
+- Improved recall for the recurrence class reduces false negatives.
+- Least Squares remains interpretable but shows limitations in separating binary classes.
 
-## Tech stack
+> Confusion matrices and detailed classification reports are available in the notebook and presentation.
+
+---
+
+## Repository Contents
+
+- `notebooks/Thyroid_Recurrence_LS_vs_SVM.ipynb`  
+  End-to-end analysis including preprocessing, modeling, and evaluation
+- `data/Thyroid_Diff.csv`  
+  Dataset used for training and evaluation
+- `reports/Thyroid_Recurrence_LS_vs_SVM.pptx`  
+  Presentation summarizing methodology and results
+
+---
+
+## Tech Stack
+
 - Python
-- NumPy, Pandas
+- NumPy
+- Pandas
 - scikit-learn
 - Matplotlib
-
-## License
-Add a license if you plan to share/allow reuse (MIT is common for portfolios).
+- Jupyter Notebook
